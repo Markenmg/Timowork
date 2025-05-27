@@ -1,60 +1,50 @@
 package app.example;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
+import com.opencsv.CSVReaderBuilder;
+
+import static spark.Spark.get;
+import static spark.Spark.port;
 
 public class CSVtoJSON {
     public static void main(String[] args) {
-        String input = "input1.2.csv";  // Your input CSV file path
-        String jsonFile = "output1.2.json";  // Output JSON file
+        port(4570);
 
-        File csvFile = new File(input);
-        if (!csvFile.exists()) {
-            System.err.println("Error: The input CSV file does not exist.");
-            return;
-        }
-
-        try {
-            List<String[]> rows;
-
-            try (CSVReader reader = new CSVReader(new FileReader(input))) {
-                rows = reader.readAll();
-            }
-
-            if (rows.isEmpty()) {
-                System.err.println("Error: The CSV file is empty.");
-                return;
-            }
-
-            String[] headers = rows.get(0);
+        get("/", (req, res) -> {
             List<Map<String, String>> jsonList = new ArrayList<>();
 
-            for (int i = 1; i < rows.size(); i++) {
-                Map<String, String> rowMap = new HashMap<>();
-                String[] row = rows.get(i);
-                for (int j = 0; j < headers.length; j++) {
-                    rowMap.put(headers[j], row.length > j ? row[j] : null);
+            try (CSVReader reader = new CSVReaderBuilder(
+                    new InputStreamReader(CSVtoJSON.class.getResourceAsStream("/input.csv")))
+                    .withCSVParser(new CSVParserBuilder().withSeparator('\t').build())
+                    .build()) {
+
+                List<String[]> rows = reader.readAll();
+                if (rows.isEmpty()) return "CSV is empty.";
+
+               String[] headers = new String[] {"id", "name", "q1", "q2", "q3", "q4", "q5", "empty", "price", "brand", "code"};
+
+
+                for (int i = 1; i < rows.size(); i++) {
+                    Map<String, String> rowMap = new LinkedHashMap<>();
+                    String[] row = rows.get(i);
+                    for (int j = 0; j < headers.length; j++) {
+                        rowMap.put(headers[j], j < row.length ? row[j].replace("\"", "") : "");
+                    }
+                    jsonList.add(rowMap);
                 }
-                jsonList.add(rowMap);
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File(jsonFile), jsonList);
-
-            System.out.println("CSV file has been successfully converted to JSON!");
-
-        } catch (CsvException | IOException e) {
-            System.err.println("Error during CSV to JSON conversion: " + e.getMessage());
-            e.printStackTrace();
-        }
+            ObjectMapper mapper = new ObjectMapper();
+            res.type("application/json");
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonList);
+        });
     }
 }
