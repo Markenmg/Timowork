@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>To‑Do App</title>
+
+  <style>
+    :root { color-scheme: light dark; }
+    body        { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background:#f6f8fa; }
+    .container  { max-width: 480px; margin:auto; background:#fff; padding:2rem; border-radius:12px;
+                  box-shadow:0 4px 24px rgba(0,0,0,.05); }
+    h1          { margin-top:0; text-align:center; }
+
+    input[type=text], input[type=password] {
+      width:100%; padding:.6rem; margin:.35rem 0; border:1px solid #ccc; border-radius:6px; font-size:1rem;
+    }
+    button      { padding:.55rem 1rem; margin:.35rem 0; border:none; border-radius:6px; cursor:pointer;
+                  background:#0d6efd; color:#fff; font-size:1rem; }
+    button.red  { background:#dc3545; }
+    button.gray { background:#6c757d; }
+    button:disabled { opacity:.6; cursor:default; }
+
+    ul          { list-style:none; padding:0; margin-top:1rem; }
+    li          { display:flex; align-items:center; background:#edf0f2; margin:.45rem 0; padding:.55rem .75rem;
+                  border-radius:8px; }
+    li.done span { text-decoration:line-through; opacity:.6; }
+    li span     { flex:1; margin-left:.55rem; font-size:1rem; }
+    li button   { background:transparent; color:#dc3545; font-size:1.1rem; padding:0 .4rem; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>To‑Do List</h1>
+
+  
+    <div id="auth">
+      <input id="username" type="text" placeholder="Username" />
+      <input id="password" type="password" placeholder="Password" />
+      <button onclick="register()">Register</button>
+      <button class="gray" onclick="login()">Login</button>
+    </div>
+
+    <div id="todo" style="display:none;">
+      <form id="addForm">
+        <input id="taskTitle" type="text" placeholder="New task…" required />
+        <button>Add</button>
+      </form>
+
+      <ul id="tasks"></ul>
+
+      <button class="red" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
