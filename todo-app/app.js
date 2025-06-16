@@ -1,10 +1,7 @@
-/* ------------------------------------------------------------------ */
-/*  To‑Do app backed by https://demo2.z-bit.ee                         */
-/* ------------------------------------------------------------------ */
+
 const API  = "https://demo2.z-bit.ee";
 let token  = localStorage.getItem("todo_token");
 
-/* --- helper: generic fetch wrapper -------------------------------- */
 async function request(path, opts = {}) {
   opts.headers = {
     "Content-Type": "application/json",
@@ -16,7 +13,7 @@ async function request(path, opts = {}) {
   return res.json();
 }
 
-/* ---------- AUTH -------------------------------------------------- */
+/*  auth */
 async function register() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -58,7 +55,7 @@ function logout() {
   document.getElementById("todo").style.display = "none";
 }
 
-/* ---------- APP STATE & UI --------------------------------------- */
+/* appstu/ui */
 async function loadTasks() {
   try {
     const list = await request("/tasks");
@@ -111,7 +108,7 @@ function switchToApp() {
   loadTasks();
 }
 
-/* ---------- EVENT HOOKS ------------------------------------------ */
+/* auto-login /DOMC */
 document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("addForm")
